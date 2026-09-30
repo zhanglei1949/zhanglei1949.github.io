@@ -1,130 +1,75 @@
-# texture
+# 张磊的技术笔记
 
-A configurable jekyll theme for simply beautiful blogs.
+基于 [Fuwari](https://github.com/saicaca/fuwari) 和 Astro 的中文技术博客。
+站点地址：https://zhanglei1949.github.io/
 
-**Demo**: [thelehhman.com/texture](https://thelehhman.com/texture)
+## 本地运行
 
-![texture theme preview](/screen1.png)
+使用 Node.js 22 LTS 和 pnpm 9.14.4（版本由 package.json 指定）。
 
-
-## Installation on Github Pages
-
-Add this line to your site's `_config.yml`:
-```yaml
-remote_theme: thelehhman/texture
+```sh
+pnpm install --frozen-lockfile
+pnpm dev
 ```
 
-**NOTE: If you are forking this repo, remove `base_url: /texture` in the `_config.yml` which is required to load the required website assets**
-## Installation
+正式构建和预览（包含真实全文搜索）：
 
-Add this line to your Jekyll site's `Gemfile`:
-
-```ruby
-gem "texture"
+```sh
+pnpm check
+pnpm build
+pnpm preview
 ```
 
-And add this line to your Jekyll site's `_config.yml`:
+开发模式的搜索使用主题的演示结果，检查搜索请使用正式构建预览。
 
-```yaml
-theme: texture
+## 写文章
+
+```sh
+pnpm new-post my-article
 ```
 
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install texture
-
-## Usage
-
-The "texture" key in _config.yml is used to customize the theme data.
-```yaml
-texture:
-  title: Adam Denisov
-  tagline: Developer. Designer
-  date_format: "%b %-d, %Y"
-
-  social_links:
-    twitter: thelehhman
-    github:  thelehhman
-    linkedIn: in/thelehhman # format: locale/username
-```
-
-**Styling**
-
-Multiple header styles are supported using the "style" property under texture in `_config.yml`.
+文章位于 `src/content/posts/`，使用 Markdown。典型文章头：
 
 ```yaml
-texture:
-  style: [yellow|red|black|blue|green|purple]
+---
+title: 我的技术文章
+published: 2026-09-30
+description: 一句话说明文章内容
+category: 工程实践
+tags: [数据库, 性能优化]
+draft: true
+---
 ```
 
-For example, the blue style looks like this:
+写好后将 `draft` 改为 `false`。文件名决定文章地址，发布后尽量不要改名；
+需要固定地址时可以显式设置 `slug: my-article`。图片可以放在文章同目录，使用相对路径引用。
 
-![texture theme blue](/screen2.png)
+站点名称、头像、主题色、导航位于 `src/config.ts`；关于页位于
+`src/content/spec/about.md`。当前头像为 `public/avatar-warrior.webp`（原图为同名 PNG）：梵高风格的孤独战士主题画作，由内置 imagegen 生成。
 
+## 部署到 GitHub Pages
 
-**Texture Picker**
+仓库 Settings → Pages → Build and deployment → Source 选择 GitHub Actions。
+推送到现有 `master` 分支后，工作流会检查、构建、生成搜索索引并发布 `dist/`。
+PR 只执行检查与构建，不发布。无需提交 `dist/` 或 `node_modules/`。
 
-You can toggle the texture picker to show/experiment various textures on your site using the showPicker variable. Remember to make it `false` for production.
+本地完成迁移并不代表已上线；远端发布需另行执行。
 
-```yaml
-texture:
-  showPicker: [false|true] # show the texture selector(development purposes)
-```
+## 迁移记录
 
-**Comments (Disqus)**
+- Fuwari 上游基线：`6d39b0dec41282e7852e23e032998a5789abee28`。
+- 保留 31 篇实际文章正文，转换日期、分类等元数据；原地址 `/posts/<slug>/` 保持不变。
+- 完整对应关系见 `migration-manifest.json`。
+- 已删除两篇无实际内容的模板文章：Hello, Jekyll 和 Coding Post。
+- 原简历 PDF 和静态资源保持旧路径；关于页已重写为中文，不再展示过时的简历入口。
+- RSS 位于 `/rss.xml`，同时保留 `/feed.xml` 兼容入口。
+- 未为文章新增开放许可；主题的默认 CC 许可面板已关闭。
+- 旧文标题或内容中已有的笔误未在此次主题迁移中擅自改写；外部图片仍依赖原站点。
 
-Comments on posts can be enabled by specifying your disqus_shortname under texture in `_config.yml`. For example,
-```yaml
-texture:
-  disqus_shortname: games
-```
+升级主题时建议比较上游变更，保留本站配置与文章，再运行检查、构建和预览。
+Fuwari 代码遵循 MIT 许可，见 LICENSE；旧主题许可保存在 LICENSE-legacy.txt。
 
-**Google Analytics**
+## 本次兼容修复
 
-It can be enabled by specifying your analytics id under texture in `_config.yml`
-```yaml
-texture:
-  analytics_id: '< YOUR ID >'
-```
-
-**Excerpts**
-
-Excerpts can be enabled by adding the following line to your `_config.yml`
-```yaml
-show_excerpts: true
-```
-
-**Toggle Navbar**
-
-```yaml
-texture:
-  showNav: true
-```
-
-**Layouts**
-
-- Home
-- Page
-- Post
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/thelehhman/texture. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [Contributor Covenant](http://contributor-covenant.org) code of conduct.
-
-## Development
-
-To set up your environment to develop this theme, run `bundle install`.
-
-Your theme is setup just like a normal Jekyll site! To test your theme, run `bundle exec jekyll serve` and open your browser at `http://localhost:4000`. This starts a Jekyll server using your theme. Add pages, documents, data, etc. like normal to test your theme's contents. As you make modifications to your theme and to your content, your site will regenerate and you should see the changes in the browser after a refresh, just like normal.
-
-When your theme is released, only the files in `_layouts`, `_includes`, `_sass` and `assets` tracked with Git will be bundled.
-To add a custom directory to your theme-gem, please edit the regexp in `texture.gemspec` accordingly.
-
-## License
-
-The theme is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
-
+补齐上游缺失的全局样式入口，收窄图片导入范围；修复 Svelte 组件类型声明，
+并避免搜索异步结果乱序覆盖当前输入。保留主题原有布局。
